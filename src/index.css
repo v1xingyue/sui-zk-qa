@@ -131,3 +131,10 @@ input[type=text] {
 input[type=text]:focus {
   border: 2px solid #888; /* Field becomes blue */
 }
+
+span.question{
+  font-weight: bold;
+  font-size: 1.2em;
+  width: 500px;
+  display: block;
+}
