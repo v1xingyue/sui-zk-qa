@@ -3,8 +3,17 @@ import {
   useCurrentAccount,
   useSuiClientQuery,
 } from "@mysten/dapp-kit";
+import { useState } from "react";
+
+interface QABox {
+  question: string;
+  answer: string;
+}
 
 const QARewardList = () => {
+  const [modal, setModal] = useState(false);
+  const [box, setBox] = useState<QABox>();
+
   const account = useCurrentAccount();
   const { data, isPending, error } = useSuiClientQuery(
     "getOwnedObjects",
@@ -16,7 +25,7 @@ const QARewardList = () => {
       },
       options: {
         showContent: true,
-        showDisplay: true,
+        showDisplay: false,
       },
     },
     {
@@ -37,17 +46,61 @@ const QARewardList = () => {
   }
 
   return (
-    <div className="card">
-      <h2>Box with QA Reward : </h2>
+    <>
       {data.data.length === 0 ? (
         <p>No objects owned by the connected wallet</p>
       ) : (
-        <h2>Objects owned by the connected wallet</h2>
+        <h2>Box with QA Reward : </h2>
       )}
       {data.data.map((item: any) => {
-        return <>{JSON.stringify(item)}</>;
+        return (
+          <div className="card">
+            <h3>
+              Q: {item.data.content.fields.question}{" "}
+              <button
+                style={{
+                  marginLeft: "20px",
+                }}
+                onClick={() => {
+                  setModal(true);
+                  setBox({
+                    question: item.data.content.fields.question,
+                    answer: "",
+                  });
+                }}
+              >
+                Answer !!
+              </button>
+            </h3>
+          </div>
+        );
       })}
-    </div>
+
+      {modal && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={() => setModal(false)}>
+              &times;
+            </span>
+            <p>
+              Q: {box?.question} <br />
+            </p>
+            <input type="text" placeholder="Your Really Answer" />
+            <button
+              style={{
+                marginLeft: "20px",
+              }}
+              onClick={() => {
+                alert("Answered !!");
+                setModal(false);
+              }}
+            >
+              Answer !!
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
