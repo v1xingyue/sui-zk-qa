@@ -5,15 +5,13 @@ import {
 } from "@mysten/dapp-kit";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { useState } from "react";
+import { contract } from "../config";
 
 interface QABox {
   question: string;
   boxType: string;
   boxID: string;
 }
-
-const contract =
-  "0xbf1191f9741508d4981d66b04883dbff9f8f4e5aeb67e2d8907ee991fb3f20ee";
 
 export const QARewardList = () => {
   const [modal, setModal] = useState(false);
@@ -118,7 +116,7 @@ export const QARewardList = () => {
                 });
                 signAndExecuteTransactionBlock(
                   {
-                    transactionBlock: txb,
+                    transactionBlock: txb as any,
                   },
                   {
                     onSuccess: (result: any) => {
