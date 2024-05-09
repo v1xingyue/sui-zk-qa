@@ -172,3 +172,9 @@ div.cell {
   opacity: 1;
 }
 
+
+div.error{
+  color: red;
+  font-size: 0.8em;
+  font-weight: bold;
+}

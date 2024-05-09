@@ -13,15 +13,22 @@ import { Line } from "./line";
 interface QAPayload {
   challenge: string;
   answer: string;
+  quantity: number;
+  quantityInput: string;
+  error: string;
 }
 
 export const CreateQALinks = () => {
+  const [createDisable, setCreateDisable] = useState<boolean>(false);
   const [delaySeconds, setDelaySeconds] = useState<number>(-1);
   const [zkLink, setZkLink] = useState<string>("");
   const [links, setLinks] = useState<any[]>([]);
   const [payload, setPayload] = useState<QAPayload>({
     challenge: "1 + 1 = ?",
     answer: "2",
+    quantity: 0.001,
+    quantityInput: "0.001",
+    error: "",
   });
 
   const { mutate: signAndExecuteTransactionBlock } =
@@ -41,6 +48,7 @@ export const CreateQALinks = () => {
   }
   ShowToolTip("hello world", -300, 500);
   const createQABox = async () => {
+    setCreateDisable(true);
     const challenge = payload.challenge;
     const answer = payload.answer;
     // const challenge = "1 + 1 = ?";
@@ -65,7 +73,9 @@ export const CreateQALinks = () => {
     });
 
     const txb = new TransactionBlock();
-    const [reward] = txb.splitCoins(txb.gas, [txb.pure(100)]);
+    const [reward] = txb.splitCoins(txb.gas, [
+      txb.pure(payload.quantity * 10 ** 9),
+    ]);
     const [reward_balance] = txb.moveCall({
       target: "0x2::coin::into_balance",
       typeArguments: ["0x2::sui::SUI"],
@@ -80,6 +90,8 @@ export const CreateQALinks = () => {
         reward_balance,
       ],
     });
+
+    builder.addClaimableMist(BigInt(2000000));
 
     builder.addClaimableObjectRef(
       box,
@@ -136,6 +148,11 @@ export const CreateQALinks = () => {
           </div>
         )}
         <div>
+          {payload.error == "" ? null : (
+            <div className="error">
+              <p>{payload.error}</p>
+            </div>
+          )}
           <div>
             Challenge:{" "}
             <input
@@ -162,7 +179,30 @@ export const CreateQALinks = () => {
               }}
             />
           </div>
-          <button onClick={createQABox}>Create QA Box</button>
+          <div>
+            Quantity (SUI):{" "}
+            <input
+              type="text"
+              value={payload.quantityInput}
+              onChange={(e: any) => {
+                let error = "";
+                const v = parseFloat(e.target.value);
+                if (isNaN(v)) {
+                  error = "input must be number!";
+                }
+                setPayload({
+                  ...payload,
+                  quantityInput: e.target.value,
+                  error,
+                });
+
+                setCreateDisable(error != "");
+              }}
+            />
+          </div>
+          <button onClick={createQABox} disabled={createDisable}>
+            Create QA Box
+          </button>
         </div>
       </div>
 
