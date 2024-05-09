@@ -9,6 +9,7 @@ import {
 import { useEffect, useState } from "react";
 
 export const CreateQALinks = () => {
+  const [delaySeconds, setDelaySeconds] = useState<number>(-1);
   const [zkLink, setZkLink] = useState<string>("");
   const [links, setLinks] = useState<any[]>([]);
 
@@ -79,29 +80,64 @@ export const CreateQALinks = () => {
       transactionBlock: txb as any,
     });
 
-    signAndExecuteTransactionBlock(
-      {
-        transactionBlock: ntxb,
-      },
-      {
-        onSuccess: (result: any) => {
-          console.log(result);
-        },
+    let delaySeconds = 15;
+    setDelaySeconds(delaySeconds);
+    const timer = setInterval(() => {
+      delaySeconds--;
+      setDelaySeconds(delaySeconds);
+      console.log(delaySeconds);
+      if (delaySeconds == 0) {
+        clearInterval(timer);
+        setDelaySeconds(-1);
+
+        signAndExecuteTransactionBlock(
+          {
+            transactionBlock: ntxb,
+          },
+          {
+            onSuccess: (result: any) => {
+              console.log(result);
+            },
+          }
+        );
       }
-    );
+    }, 1000);
   };
 
   return (
     <>
       <div className="card">
-        <h2>Link History:</h2>
-        {links.map((link: any) => {
-          return <p>{link.link.address}</p>;
-        })}
+        {zkLink == "" ? null : (
+          <>
+            <div>
+              <a href={zkLink}>
+                <strong>{zkLink}</strong>{" "}
+              </a>
+              <p>
+                <strong>
+                  Make sure You have remeber this link.
+                  {delaySeconds > 0 ? (
+                    <p>{delaySeconds} seconds left to send transaction.</p>
+                  ) : null}
+                </strong>
+              </p>
+            </div>
+          </>
+        )}
+        <button onClick={createQABox}>Create QA Box</button>
       </div>
 
-      {zkLink == "" ? null : <a href={zkLink}>{zkLink}</a>}
-      <button onClick={createQABox}>Create QA Box</button>
+      <div className="card">
+        <h2>Sent History:</h2>
+        {links.map((link: any) => {
+          return (
+            <p>
+              <div className="cell">{link.link.address}</div>
+              <div className="cell">{JSON.stringify(link.claimed)}</div>
+            </p>
+          );
+        })}
+      </div>
     </>
   );
 };
