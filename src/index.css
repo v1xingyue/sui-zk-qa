@@ -71,11 +71,11 @@ button:focus-visible {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
+  
 }
 .card {
   padding: 1em;
 }
-
 
 /* Modal Container */
 .modal {
@@ -171,3 +171,4 @@ div.cell {
   visibility: visible;
   opacity: 1;
 }
+

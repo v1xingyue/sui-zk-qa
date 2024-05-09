@@ -8,11 +8,21 @@ import {
 } from "@mysten/dapp-kit";
 import { useEffect, useState } from "react";
 import { ShowToolTip } from "../tooltip";
+import { Line } from "./line";
+
+interface QAPayload {
+  challenge: string;
+  answer: string;
+}
 
 export const CreateQALinks = () => {
   const [delaySeconds, setDelaySeconds] = useState<number>(-1);
   const [zkLink, setZkLink] = useState<string>("");
   const [links, setLinks] = useState<any[]>([]);
+  const [payload, setPayload] = useState<QAPayload>({
+    challenge: "1 + 1 = ?",
+    answer: "2",
+  });
 
   const { mutate: signAndExecuteTransactionBlock } =
     useSignAndExecuteTransactionBlock();
@@ -31,8 +41,10 @@ export const CreateQALinks = () => {
   }
   ShowToolTip("hello world", -300, 500);
   const createQABox = async () => {
-    const challenge = "1 + 1 = ?";
-    const answer = "2";
+    const challenge = payload.challenge;
+    const answer = payload.answer;
+    // const challenge = "1 + 1 = ?";
+    // const answer = "2";
 
     // const challenge = "What is sui organazation repo link with github ?";
     // const answer = "https://github.com/MystenLabs/sui";
@@ -109,24 +121,52 @@ export const CreateQALinks = () => {
     <>
       <div className="card">
         {zkLink == "" ? null : (
-          <>
-            <div>
-              <a href={zkLink}>
-                <strong>{zkLink}</strong>{" "}
-              </a>
-              <p>
-                <strong>
-                  Make sure You have remeber this link.
-                  {delaySeconds > 0 ? (
-                    <p>{delaySeconds} seconds left to send transaction.</p>
-                  ) : null}
-                </strong>
-              </p>
-            </div>
-          </>
+          <div>
+            <a href={zkLink}>
+              <strong>{zkLink}</strong>{" "}
+            </a>
+            <p>
+              <strong>
+                Make sure You have remeber this link.
+                {delaySeconds > 0 ? (
+                  <p>{delaySeconds} seconds left to send transaction.</p>
+                ) : null}
+              </strong>
+            </p>
+          </div>
         )}
-        <button onClick={createQABox}>Create QA Box</button>
+        <div>
+          <div>
+            Challenge:{" "}
+            <input
+              type="text"
+              value={payload.challenge}
+              onChange={(e) => {
+                setPayload({
+                  ...payload,
+                  challenge: e.target.value,
+                });
+              }}
+            />
+          </div>
+          <div>
+            Result:{" "}
+            <input
+              type="text"
+              value={payload.answer}
+              onChange={(e) => {
+                setPayload({
+                  ...payload,
+                  answer: e.target.value,
+                });
+              }}
+            />
+          </div>
+          <button onClick={createQABox}>Create QA Box</button>
+        </div>
       </div>
+
+      <Line />
 
       <div className="card">
         <h2>Sent History:</h2>

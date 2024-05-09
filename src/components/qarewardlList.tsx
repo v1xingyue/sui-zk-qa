@@ -53,7 +53,7 @@ export const QARewardList = () => {
   }
 
   return (
-    <>
+    <div>
       {data.data.length === 0 ? (
         <p>No objects owned by the connected wallet</p>
       ) : (
@@ -136,6 +136,6 @@ export const QARewardList = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };

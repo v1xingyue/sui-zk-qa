@@ -2,6 +2,7 @@ import { ConnectButton } from "@mysten/dapp-kit";
 import { QARewardList } from "./components/qarewardlList";
 import { WalletStatus } from "./components/walletStatus";
 import { CreateQALinks } from "./components/createQABox";
+import { Line } from "./components/line";
 
 const App = () => {
   return (
@@ -11,7 +12,9 @@ const App = () => {
         <ConnectButton />
         <WalletStatus />
       </div>
+      <Line />
       <QARewardList />
+      <Line />
       <CreateQALinks />
     </>
   );
