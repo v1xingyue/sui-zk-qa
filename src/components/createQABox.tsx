@@ -68,7 +68,7 @@ export const CreateQALinks = () => {
       sender: account.address,
       redirect: {
         url: "https://sui-zk-qa.vercel.app/",
-        name: "cratetors",
+        name: "creators",
       },
     });
 
