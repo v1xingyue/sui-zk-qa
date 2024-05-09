@@ -28,6 +28,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <SuiClientProvider networks={networkConfig} defaultNetwork="mainnet">
         <WalletProvider autoConnect>
           <App />
+          <div id="tooltip" className="tooltip">
+            <span id="tooltiptext" className="tooltiptext"></span>
+          </div>
         </WalletProvider>
       </SuiClientProvider>
     </QueryClientProvider>

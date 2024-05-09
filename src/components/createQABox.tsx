@@ -7,6 +7,7 @@ import {
   useSignAndExecuteTransactionBlock,
 } from "@mysten/dapp-kit";
 import { useEffect, useState } from "react";
+import { ShowToolTip } from "../tooltip";
 
 export const CreateQALinks = () => {
   const [delaySeconds, setDelaySeconds] = useState<number>(-1);
@@ -28,7 +29,7 @@ export const CreateQALinks = () => {
   if (!account) {
     return null;
   }
-
+  ShowToolTip("hello world", -300, 500);
   const createQABox = async () => {
     const challenge = "1 + 1 = ?";
     const answer = "2";
