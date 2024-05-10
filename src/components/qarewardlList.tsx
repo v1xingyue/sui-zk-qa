@@ -150,7 +150,7 @@ export const QARewardList = () => {
       {modal && (
         <div className="modal">
           <div className="modal-content">
-            <span className="close" onClick={() => setModal(false)}>
+            <span className="close" onClick={() => setTransferModal(false)}>
               &times;
             </span>
             <p>
