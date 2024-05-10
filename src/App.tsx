@@ -7,7 +7,7 @@ import { Line } from "./components/line";
 const App = () => {
   return (
     <>
-      <h1>Sui Zk QA </h1>
+      <h1>Sui QA Reward</h1>
       <div className="card">
         <ConnectButton />
         <WalletStatus />
