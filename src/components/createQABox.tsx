@@ -91,7 +91,7 @@ export const CreateQALinks = () => {
       ],
     });
 
-    builder.addClaimableMist(BigInt(2000000));
+    builder.addClaimableMist(BigInt(2_000_000));
 
     builder.addClaimableObjectRef(
       box,
@@ -212,7 +212,7 @@ export const CreateQALinks = () => {
         <h2>Sent History:</h2>
         {links.map((link: any) => {
           return (
-            <p>
+            <p key={link.link.address}>
               <div className="cell">{link.link.address}</div>
               <div className="cell">{JSON.stringify(link.claimed)}</div>
             </p>

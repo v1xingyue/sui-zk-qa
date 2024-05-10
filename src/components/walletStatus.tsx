@@ -22,13 +22,7 @@ export const WalletStatus = () => {
   }
 
   return (
-    <span
-      style={{
-        marginLeft: "100px",
-        display: "inline",
-        fontWeight: "bold",
-      }}
-    >
+    <span className="card">
       <div className="cell">{account?.chains[0]}</div>
       <div className="cell">Balance: {Number(data.totalBalance) / 10 ** 9}</div>
     </span>

@@ -14,6 +14,8 @@ interface QABox {
 }
 
 export const QARewardList = () => {
+  const [transferToAddress, setTransferToAddress] = useState("");
+  const [transferModal, setTransferModal] = useState(false);
   const [modal, setModal] = useState(false);
   const [box, setBox] = useState<QABox>();
   const [answer, setAnswer] = useState("");
@@ -67,9 +69,7 @@ export const QARewardList = () => {
             </span>
             <span>
               <button
-                style={{
-                  marginLeft: "20px",
-                }}
+                className="mycommon"
                 onClick={async () => {
                   setBox({
                     question: item.data.content.fields.question,
@@ -81,15 +81,75 @@ export const QARewardList = () => {
               >
                 Answer !!
               </button>
+              <button
+                className="mycommon"
+                onClick={async () => {
+                  setBox({
+                    question: item.data.content.fields.question,
+                    boxType: item.data.content.type,
+                    boxID: item.data.objectId,
+                  });
+                  setTransferModal(true);
+                }}
+              >
+                Transfer
+              </button>
             </span>
           </div>
         );
       })}
 
+      {transferModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={() => setModal(false)}>
+              &times;
+            </span>
+            <input
+              type="text"
+              placeholder="Transfer To Address"
+              value={transferToAddress}
+              onChange={(e) => setTransferToAddress(e.target.value)}
+            />
+            <button
+              className="mycommon"
+              onClick={() => {
+                if (box?.boxID === undefined) {
+                  return;
+                }
+                const txb = new TransactionBlock();
+
+                txb.transferObjects(
+                  [txb.object(box?.boxID)],
+                  txb.pure.address(transferToAddress)
+                );
+
+                signAndExecuteTransactionBlock(
+                  {
+                    transactionBlock: txb as any,
+                  },
+                  {
+                    onSuccess: (result: any) => {
+                      console.log(result);
+                      setModal(false);
+                    },
+                    onError: (error: any) => {
+                      console.error(error);
+                      setModal(false);
+                    },
+                  }
+                );
+              }}
+            >
+              Do Transfer
+            </button>
+          </div>
+        </div>
+      )}
+
       {modal && (
         <div className="modal">
           <div className="modal-content">
-            {JSON.stringify(box, null, 2)}
             <span className="close" onClick={() => setModal(false)}>
               &times;
             </span>
@@ -103,16 +163,17 @@ export const QARewardList = () => {
               onChange={(e) => setAnswer(e.target.value)}
             />
             <button
-              style={{
-                marginLeft: "20px",
-              }}
+              className="mycommon"
               onClick={() => {
                 const coinType = "0x2::sui::SUI";
                 const txb = new TransactionBlock();
                 txb.moveCall({
                   target: `${contract}::zkqa::get_coin_reward`,
                   typeArguments: [coinType],
-                  arguments: [txb.pure(box?.boxID), txb.pure(answer)],
+                  arguments: [
+                    txb.pure(box?.boxID),
+                    txb.pure(String(answer).trim()),
+                  ],
                 });
                 signAndExecuteTransactionBlock(
                   {
