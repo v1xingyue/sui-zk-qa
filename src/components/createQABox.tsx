@@ -19,6 +19,7 @@ interface QAPayload {
 }
 
 export const CreateQALinks = () => {
+  const [sendNow, setSendNow] = useState<boolean>(false);
   const [createDisable, setCreateDisable] = useState<boolean>(false);
   const [delaySeconds, setDelaySeconds] = useState<number>(-1);
   const [zkLink, setZkLink] = useState<string>("");
@@ -112,9 +113,10 @@ export const CreateQALinks = () => {
       delaySeconds--;
       setDelaySeconds(delaySeconds);
       console.log(delaySeconds);
-      if (delaySeconds == 0) {
+      if (delaySeconds == 0 || sendNow) {
         clearInterval(timer);
         setDelaySeconds(-1);
+        setSendNow(false);
 
         signAndExecuteTransactionBlock(
           {
@@ -152,7 +154,9 @@ export const CreateQALinks = () => {
                     <p>{delaySeconds} seconds left to send transaction.</p>
                   ) : null}
                 </strong>
-                <button>Rember and Send </button>
+                <button onClick={() => setSendNow(true)}>
+                  Rember and Send{" "}
+                </button>
               </p>
             </div>
           ) : (
