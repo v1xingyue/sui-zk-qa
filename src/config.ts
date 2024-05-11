@@ -1,5 +1,9 @@
-export const contract =
-  "0xbf1191f9741508d4981d66b04883dbff9f8f4e5aeb67e2d8907ee991fb3f20ee";
-
+// devnet
+// export const network = "devnet";
 // export const contract =
-//   "0x20ac7dfc8b9ea11929c4c3c001a3b32ff71d6c18f26c90a0a790272bee52b899";
+//   "0x2f85da3158b9999fab4ce1b8c5c721978d386913d0acac6a842d700ff50f0d83";
+
+// mainnet
+export const network = "mainnet";
+export const contract =
+  "0x5b501f4d59e65326a294ba0aea52b21227b0c0e69030b402fea10804682e01b4";

@@ -1,12 +1,16 @@
 module zkqa::zkqa {
 
     use std::string::{String,Self};
-    use sui::{hash,hex,package};
+    use sui::{hex,package};
     use sui::tx_context::{sender};
     use sui::event;
-
     use sui::coin;
     use sui::balance::Balance;
+
+    // just modify this line, change validator to your own module
+    use zkqa::validator as validator;
+
+    const E_ANSWER_BAD: u64 = 0x3;
 
     public struct ZKQA has drop {}
 
@@ -17,8 +21,8 @@ module zkqa::zkqa {
     public struct QABox<T:store> has key, store {
         id: UID,
         question: String,
-        answer_hash: vector<u8>,
-        reward: T
+        reward: T,
+        validator: validator::Validator,
     }
 
     fun init(otw: ZKQA, ctx: &mut TxContext) {
@@ -33,25 +37,21 @@ module zkqa::zkqa {
             id: object::new(ctx),
             question,
             reward,
-            answer_hash: hex::decode(answer_hash_hex),
+            validator: validator::new(ctx,hex::decode(answer_hash_hex)),
         }
-        
     }
     
-    public fun answer<T:store>(box:QABox<T>,answer: vector<u8>) : T {
-        assert!(hash::blake2b256(&answer) == box.answer_hash,0);
-        get_reward(box)
-    }
-
+    // open box function
     fun get_reward<T:store>(box:QABox<T>): T {
-        let QABox<T>{id,question:_,reward,answer_hash:_} = box;
+        let QABox<T>{id,question:_,reward,validator:v} = box;
+        v.clean();
         object::delete(id);
         reward
     }
 
     // T --> 0x2::sui::SUI
     entry public fun get_coin_reward<T>(box:QABox<Balance<T>>,answer: vector<u8>,ctx:&mut TxContext)  {
-        assert!(hash::blake2b256(&answer) == box.answer_hash,0);
+        assert!(box.validator.do_validate(&answer),E_ANSWER_BAD);
         let reward = get_reward(box);
         let coin = coin::from_balance<T>(reward,ctx);
         transfer::public_transfer(coin, sender(ctx));

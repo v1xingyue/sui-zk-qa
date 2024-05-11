@@ -90,6 +90,8 @@ export const CreateQALinks = () => {
       ],
     });
 
+    // txb.transferObjects([box], account.address);
+
     builder.addClaimableMist(BigInt(2_000_000));
 
     builder.addClaimableObjectRef(
@@ -116,7 +118,7 @@ export const CreateQALinks = () => {
 
         signAndExecuteTransactionBlock(
           {
-            transactionBlock: ntxb,
+            transactionBlock: ntxb as any,
           },
           {
             onSuccess: (result: any) => {
