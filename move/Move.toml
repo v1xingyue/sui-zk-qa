@@ -3,7 +3,7 @@ name = "zkqa"
 edition = "2024.beta" # edition = "legacy" to use legacy (pre-2024) Move
 # license = ""           # e.g., "MIT", "GPL", "Apache 2.0"
 # authors = ["..."]      # e.g., ["Joe Smith (joesmith@noemail.com)", "John Snow (johnsnow@noemail.com)"]
-published-at = "0x20ac7dfc8b9ea11929c4c3c001a3b32ff71d6c18f26c90a0a790272bee52b899"
+published-at = "0x5b501f4d59e65326a294ba0aea52b21227b0c0e69030b402fea10804682e01b4"
 
 [dependencies]
 # Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/testnet" }
