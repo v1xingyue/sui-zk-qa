@@ -4,8 +4,9 @@ module zkqa::zkqa {
     use sui::{hex,package};
     use sui::tx_context::{sender};
     use sui::event;
-    use sui::coin;
-    use sui::balance::Balance;
+    use sui::coin::{Self,Coin};
+    use sui::balance::{Balance};
+    
 
     // just modify this line, change validator to your own module
     use zkqa::validator as validator;
@@ -55,6 +56,18 @@ module zkqa::zkqa {
         let reward = get_reward(box);
         let coin = coin::from_balance<T>(reward,ctx);
         transfer::public_transfer(coin, sender(ctx));
+    }
+
+    // T --> 0x2::sui::SUI
+    entry public fun new_coinbox_to_me<T>(question: String,answer_hash_hex: vector<u8> ,reward_coin:Coin<T>,ctx:&mut TxContext){
+        let reward = coin::into_balance<T>(reward_coin);
+        let box = new<Balance<T>>(question,answer_hash_hex,reward,ctx);
+        transfer::public_transfer(box, sender(ctx));
+    }
+
+    entry public fun new_to_me<T:store>(question: String,answer_hash_hex: vector<u8> ,reward:T,ctx:&mut TxContext){
+        let box = new(question,answer_hash_hex,reward,ctx);
+        transfer::public_transfer(box, sender(ctx));
     }
     
 }
