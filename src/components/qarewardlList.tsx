@@ -39,6 +39,7 @@ export const QARewardList = () => {
     },
     {
       enabled: !!account,
+      refetchInterval: 5000,
     }
   );
 

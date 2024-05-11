@@ -53,7 +53,6 @@ export const CreateQALinks = () => {
     const answer = payload.answer;
     // const challenge = "1 + 1 = ?";
     // const answer = "2";
-
     // const challenge = "What is sui organazation repo link with github ?";
     // const answer = "https://github.com/MystenLabs/sui";
 
@@ -132,77 +131,82 @@ export const CreateQALinks = () => {
   return (
     <>
       <div className="card">
-        {zkLink == "" ? null : (
-          <div>
-            <a href={zkLink}>
-              <strong>{zkLink}</strong>{" "}
-            </a>
-            <p>
-              <strong>
-                Make sure You have remeber this link.
-                {delaySeconds > 0 ? (
-                  <p>{delaySeconds} seconds left to send transaction.</p>
-                ) : null}
-              </strong>
-            </p>
-          </div>
-        )}
         <div>
           {payload.error == "" ? null : (
             <div className="error">
               <p>{payload.error}</p>
             </div>
           )}
-          <div>
-            Challenge:{" "}
-            <input
-              type="text"
-              value={payload.challenge}
-              onChange={(e) => {
-                setPayload({
-                  ...payload,
-                  challenge: e.target.value,
-                });
-              }}
-            />
-          </div>
-          <div>
-            Result:{" "}
-            <input
-              type="text"
-              value={payload.answer}
-              onChange={(e) => {
-                setPayload({
-                  ...payload,
-                  answer: e.target.value,
-                });
-              }}
-            />
-          </div>
-          <div>
-            Quantity (SUI):{" "}
-            <input
-              type="text"
-              value={payload.quantityInput}
-              onChange={(e: any) => {
-                let error = "";
-                const v = parseFloat(e.target.value);
-                if (isNaN(v)) {
-                  error = "input must be number!";
-                }
-                setPayload({
-                  ...payload,
-                  quantityInput: e.target.value,
-                  error,
-                });
 
-                setCreateDisable(error != "");
-              }}
-            />
-          </div>
-          <button onClick={createQABox} disabled={createDisable}>
-            Create QA Box
-          </button>
+          {zkLink != "" ? (
+            <div>
+              <a href={zkLink}>
+                <strong>{zkLink}</strong>{" "}
+              </a>
+              <p>
+                <strong>
+                  Make sure You have remeber this link.
+                  {delaySeconds > 0 ? (
+                    <p>{delaySeconds} seconds left to send transaction.</p>
+                  ) : null}
+                </strong>
+                <button>Rember and Send </button>
+              </p>
+            </div>
+          ) : (
+            <>
+              <div>
+                Challenge:{" "}
+                <input
+                  type="text"
+                  value={payload.challenge}
+                  onChange={(e) => {
+                    setPayload({
+                      ...payload,
+                      challenge: e.target.value,
+                    });
+                  }}
+                />
+              </div>
+              <div>
+                Result:{" "}
+                <input
+                  type="text"
+                  value={payload.answer}
+                  onChange={(e) => {
+                    setPayload({
+                      ...payload,
+                      answer: e.target.value,
+                    });
+                  }}
+                />
+              </div>
+              <div>
+                Quantity (SUI):{" "}
+                <input
+                  type="text"
+                  value={payload.quantityInput}
+                  onChange={(e: any) => {
+                    let error = "";
+                    const v = parseFloat(e.target.value);
+                    if (isNaN(v)) {
+                      error = "input must be number!";
+                    }
+                    setPayload({
+                      ...payload,
+                      quantityInput: e.target.value,
+                      error,
+                    });
+
+                    setCreateDisable(error != "");
+                  }}
+                />
+              </div>
+              <button onClick={createQABox} disabled={createDisable}>
+                Create QA Box
+              </button>
+            </>
+          )}
         </div>
       </div>
 
