@@ -10,6 +10,7 @@ export const WalletStatus = () => {
     },
     {
       enabled: !!account,
+      refetchInterval: 5000,
     }
   );
 

@@ -6,4 +6,7 @@
 // mainnet
 export const network = "mainnet";
 export const contract =
-  "0xbec947bd5590c89a6191876174a464e3d3151b794b75913f3ddefdf9362d4f64";
+  "0x5b501f4d59e65326a294ba0aea52b21227b0c0e69030b402fea10804682e01b4";
+
+console.log("network", network);
+console.log("contract", contract);

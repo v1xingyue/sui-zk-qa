@@ -144,6 +144,10 @@ div.cell {
   margin-left: 1rem;
 }
 
+div.line {
+  margin-top: 0.5rem;
+}
+
 .tooltip {
   position: absolute;
   z-index: 1;

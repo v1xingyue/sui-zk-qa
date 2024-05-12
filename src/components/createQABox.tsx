@@ -7,33 +7,14 @@ import {
   useSignAndExecuteTransactionBlock,
 } from "@mysten/dapp-kit";
 import { useEffect, useState } from "react";
-import { ShowToolTip } from "../tooltip";
 import { Line } from "./line";
+import { ShowToolTip } from "../tooltip";
+import { QAPayload, defaultPayload } from "../types";
+import { time } from "console";
+import { send } from "process";
 
-interface QAPayload {
-  challenge: string;
-  answer: string;
-  quantity: number;
-  quantityInput: string;
-  error: string;
-}
-
-export const CreateQALinks = () => {
-  const [sendNow, setSendNow] = useState<boolean>(false);
-  const [createDisable, setCreateDisable] = useState<boolean>(false);
-  const [delaySeconds, setDelaySeconds] = useState<number>(-1);
-  const [zkLink, setZkLink] = useState<string>("");
+const ZkLinkHistory = () => {
   const [links, setLinks] = useState<any[]>([]);
-  const [payload, setPayload] = useState<QAPayload>({
-    challenge: "1 + 1 = ?",
-    answer: "2",
-    quantity: 0.001,
-    quantityInput: "0.001",
-    error: "",
-  });
-
-  const { mutate: signAndExecuteTransactionBlock } =
-    useSignAndExecuteTransactionBlock();
   const account = useCurrentAccount();
   useEffect(() => {
     if (account) {
@@ -44,24 +25,73 @@ export const CreateQALinks = () => {
       });
     }
   }, [account]);
+  return (
+    <div className="card">
+      <h2>Sent History:</h2>
+      {links.map((link: any) => {
+        return (
+          <div key={link.link.address}>
+            <div className="cell line">{link.link.address}</div>
+            <div className="cell line">{JSON.stringify(link.claimed)}</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+export const CreateQALinks = () => {
+  const [sendNow, setSendNow] = useState<boolean>(false);
+  const [timer, setTimer] = useState<any>(null);
+  const [txb, setTxb] = useState<TransactionBlock | null>(null);
+  const [createDisable, setCreateDisable] = useState<boolean>(false);
+  const [delaySeconds, setDelaySeconds] = useState<number>(-1);
+  const [zkLink, setZkLink] = useState<string>("");
+  const [payload, setPayload] = useState<QAPayload>(defaultPayload);
+  const { mutate: signAndExecuteTransactionBlock } =
+    useSignAndExecuteTransactionBlock();
+  const account = useCurrentAccount();
+
+  useEffect(() => {
+    console.log(txb, sendNow);
+    if (txb && sendNow) {
+      console.log("Sending transaction");
+      if (timer) {
+        clearInterval(timer);
+      }
+      signAndExecuteTransactionBlock(
+        {
+          transactionBlock: txb as any,
+        },
+        {
+          onSuccess: (result: any) => {
+            console.log(result);
+          },
+          onError: (error: any) => {
+            console.log(error);
+            ShowToolTip(error.message, -300, -300);
+          },
+        }
+      );
+    }
+
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, [txb, timer, sendNow, signAndExecuteTransactionBlock]);
+
   if (!account) {
     return null;
   }
-  ShowToolTip("hello world", -300, 500);
+
   const createQABox = async () => {
     setCreateDisable(true);
-    const challenge = payload.challenge;
-    const answer = payload.answer;
-    // const challenge = "1 + 1 = ?";
-    // const answer = "2";
-    // const challenge = "What is sui organazation repo link with github ?";
-    // const answer = "https://github.com/MystenLabs/sui";
-
+    const { challenge, answer } = payload;
     const output = new Uint8Array(32);
-
     const encoder = new TextEncoder();
     const input = encoder.encode(answer);
-
     const hash = blake2b(output.length).update(input);
 
     const builder = new ZkSendLinkBuilder({
@@ -92,9 +122,7 @@ export const CreateQALinks = () => {
     });
 
     // txb.transferObjects([box], account.address);
-
     builder.addClaimableMist(BigInt(2_000_000));
-
     builder.addClaimableObjectRef(
       box,
       `${contract}::zkqa::QABox<0x2::balance::Balance<0x2::sui::SUI>>`
@@ -107,29 +135,19 @@ export const CreateQALinks = () => {
       transactionBlock: txb as any,
     });
 
-    let delaySeconds = 15;
+    let delaySeconds = 5;
     setDelaySeconds(delaySeconds);
+    setTxb(ntxb as any);
     const timer = setInterval(() => {
       delaySeconds--;
       setDelaySeconds(delaySeconds);
-      console.log(delaySeconds);
       if (delaySeconds == 0 || sendNow) {
         clearInterval(timer);
         setDelaySeconds(-1);
-        setSendNow(false);
-
-        signAndExecuteTransactionBlock(
-          {
-            transactionBlock: ntxb as any,
-          },
-          {
-            onSuccess: (result: any) => {
-              console.log(result);
-            },
-          }
-        );
+        setSendNow(true);
       }
     }, 1000);
+    setTimer(timer);
   };
 
   return (
@@ -154,7 +172,12 @@ export const CreateQALinks = () => {
                     <p>{delaySeconds} seconds left to send transaction.</p>
                   ) : null}
                 </strong>
-                <button onClick={() => setSendNow(true)}>
+                <button
+                  onClick={() => {
+                    setDelaySeconds(0);
+                    setSendNow(true);
+                  }}
+                >
                   Rember and Send{" "}
                 </button>
               </p>
@@ -203,7 +226,6 @@ export const CreateQALinks = () => {
                       quantityInput: e.target.value,
                       error,
                     });
-
                     setCreateDisable(error != "");
                   }}
                 />
@@ -215,20 +237,8 @@ export const CreateQALinks = () => {
           )}
         </div>
       </div>
-
       <Line />
-
-      <div className="card">
-        <h2>Sent History:</h2>
-        {links.map((link: any) => {
-          return (
-            <p key={link.link.address}>
-              <div className="cell">{link.link.address}</div>
-              <div className="cell">{JSON.stringify(link.claimed)}</div>
-            </p>
-          );
-        })}
-      </div>
+      <ZkLinkHistory />
     </>
   );
 };
