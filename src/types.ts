@@ -13,7 +13,7 @@ export const defaultPayload: QAPayload = {
   quantity: 0.001,
   quantityInput: "0.001",
   error: "",
-  sendToMe: true,
+  sendToMe: false,
 };
 
 // example challenge and answer
