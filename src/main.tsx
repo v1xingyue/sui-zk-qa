@@ -6,12 +6,14 @@ import {
   SuiClientProvider,
   WalletProvider,
   createNetworkConfig,
+  lightTheme,
 } from "@mysten/dapp-kit";
 import { getFullnodeUrl } from "@mysten/sui.js/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "@mysten/dapp-kit/dist/index.css";
 import { registerZkSendWallet } from "@mysten/zksend";
 import { network } from "./config.ts";
+import { darkTheme } from "./darkTheme.ts";
 
 registerZkSendWallet("zkQA", { origin: "https://zksend.com" });
 const queryClient = new QueryClient();
@@ -31,7 +33,18 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         networks={networkConfig}
         defaultNetwork={defaultNetwork}
       >
-        <WalletProvider autoConnect>
+        <WalletProvider
+          autoConnect
+          theme={[
+            {
+              variables: lightTheme,
+            },
+            {
+              variables: darkTheme,
+              mediaQuery: "(prefers-color-scheme: dark)",
+            },
+          ]}
+        >
           <App />
           <div id="tooltip" className="tooltip">
             <span id="tooltiptext" className="tooltiptext"></span>
