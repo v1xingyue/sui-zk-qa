@@ -1,7 +1,7 @@
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import blake2b from "blake2b";
 import { contract } from "../config";
-import { ZkSendLinkBuilder, listCreatedLinks } from "@mysten/zksend";
+import { ZkSendLinkBuilder } from "@mysten/zksend";
 import {
   useCurrentAccount,
   useSignAndExecuteTransactionBlock,
@@ -10,33 +10,7 @@ import { useEffect, useState } from "react";
 import { Line } from "./line";
 import { ShowToolTip } from "../tooltip";
 import { QAPayload, defaultPayload } from "../types";
-
-const ZkLinkHistory = () => {
-  const [links, setLinks] = useState<any[]>([]);
-  const account = useCurrentAccount();
-  useEffect(() => {
-    if (account) {
-      listCreatedLinks({
-        address: account.address,
-      }).then((data: any) => {
-        setLinks(data.links);
-      });
-    }
-  }, [account]);
-  return (
-    <div className="card">
-      <h2>Sent History:</h2>
-      {links.map((link: any) => {
-        return (
-          <div key={link.link.address}>
-            <div className="cell line">{link.link.address}</div>
-            <div className="cell line">{JSON.stringify(link.claimed)}</div>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
+import { ZkLinkHistory } from "./zkLinkHistory";
 
 export const CreateQALinks = () => {
   const [sendNow, setSendNow] = useState<boolean>(false);
@@ -92,14 +66,6 @@ export const CreateQALinks = () => {
     const input = encoder.encode(answer);
     const hash = blake2b(output.length).update(input);
 
-    const builder = new ZkSendLinkBuilder({
-      sender: account.address,
-      redirect: {
-        url: "https://sui-zk-qa.vercel.app/",
-        name: "creators",
-      },
-    });
-
     const txb = new TransactionBlock();
     const [reward] = txb.splitCoins(txb.gas, [
       txb.pure(payload.quantity * 10 ** 9),
@@ -119,33 +85,44 @@ export const CreateQALinks = () => {
       ],
     });
 
-    // txb.transferObjects([box], account.address);
-    builder.addClaimableMist(BigInt(2_000_000));
-    builder.addClaimableObjectRef(
-      box,
-      `${contract}::zkqa::QABox<0x2::balance::Balance<0x2::sui::SUI>>`
-    );
+    if (payload.sendToMe) {
+      txb.transferObjects([box], account.address);
+      setTxb(txb);
+      setSendNow(true);
+    } else {
+      const builder = new ZkSendLinkBuilder({
+        sender: account.address,
+        redirect: {
+          url: "https://sui-zk-qa.vercel.app/",
+          name: "creators",
+        },
+      });
+      builder.addClaimableMist(BigInt(2_000_000));
+      builder.addClaimableObjectRef(
+        box,
+        `${contract}::zkqa::QABox<0x2::balance::Balance<0x2::sui::SUI>>`
+      );
 
-    console.log(builder.getLink());
-    setZkLink(builder.getLink());
+      console.log(builder.getLink());
+      setZkLink(builder.getLink());
 
-    const ntxb = await builder.createSendTransaction({
-      transactionBlock: txb as any,
-    });
-
-    let delaySeconds = 5;
-    setDelaySeconds(delaySeconds);
-    setTxb(ntxb as any);
-    const timer = setInterval(() => {
-      delaySeconds--;
+      const ntxb = await builder.createSendTransaction({
+        transactionBlock: txb as any,
+      });
+      setTxb(ntxb as any);
+      let delaySeconds = 15;
       setDelaySeconds(delaySeconds);
-      if (delaySeconds == 0 || sendNow) {
-        clearInterval(timer);
-        setDelaySeconds(-1);
-        setSendNow(true);
-      }
-    }, 1000);
-    setTimer(timer);
+      const timer = setInterval(() => {
+        delaySeconds--;
+        setDelaySeconds(delaySeconds);
+        if (delaySeconds == 0 || sendNow) {
+          clearInterval(timer);
+          setDelaySeconds(-1);
+          setSendNow(true);
+        }
+      }, 1000);
+      setTimer(timer);
+    }
   };
 
   return (
@@ -208,6 +185,7 @@ export const CreateQALinks = () => {
                   }}
                 />
               </div>
+
               <div>
                 Quantity (SUI):{" "}
                 <input
@@ -227,6 +205,24 @@ export const CreateQALinks = () => {
                     setCreateDisable(error != "");
                   }}
                 />
+              </div>
+              <div className="line">
+                <span>
+                  <label>
+                    Send To Me{" "}
+                    <input
+                      type="checkbox"
+                      checked={payload.sendToMe}
+                      onChange={(e: any) => {
+                        console.log(e.target.checked);
+                        setPayload({
+                          ...payload,
+                          sendToMe: e.target.checked,
+                        });
+                      }}
+                    />
+                  </label>
+                </span>
               </div>
               <button onClick={createQABox} disabled={createDisable}>
                 Create QA Box

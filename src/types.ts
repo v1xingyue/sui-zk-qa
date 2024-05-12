@@ -4,6 +4,7 @@ export interface QAPayload {
   quantity: number;
   quantityInput: string;
   error: string;
+  sendToMe: boolean;
 }
 
 export const defaultPayload: QAPayload = {
@@ -12,6 +13,7 @@ export const defaultPayload: QAPayload = {
   quantity: 0.001,
   quantityInput: "0.001",
   error: "",
+  sendToMe: true,
 };
 
 // example challenge and answer
