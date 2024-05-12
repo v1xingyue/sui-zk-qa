@@ -10,8 +10,6 @@ import { useEffect, useState } from "react";
 import { Line } from "./line";
 import { ShowToolTip } from "../tooltip";
 import { QAPayload, defaultPayload } from "../types";
-import { time } from "console";
-import { send } from "process";
 
 const ZkLinkHistory = () => {
   const [links, setLinks] = useState<any[]>([]);
