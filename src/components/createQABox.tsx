@@ -173,7 +173,7 @@ export const CreateQALinks = () => {
                 />
               </div>
               <div>
-                Result:{" "}
+                Expect:{" "}
                 <input
                   type="text"
                   value={payload.answer}
