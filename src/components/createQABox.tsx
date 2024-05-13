@@ -97,7 +97,7 @@ export const CreateQALinks = () => {
           name: "creators",
         },
       });
-      builder.addClaimableMist(BigInt(2_000_000));
+      builder.addClaimableMist(BigInt(payload.zkSendGas * 10 ** 9));
       builder.addClaimableObjectRef(
         box,
         `${contract}::zkqa::QABox<0x2::balance::Balance<0x2::sui::SUI>>`
@@ -185,21 +185,45 @@ export const CreateQALinks = () => {
                   }}
                 />
               </div>
+              <div>
+                Zksend Gas (SUI):{" "}
+                <input
+                  type="text"
+                  value={payload.zkSendGasInput}
+                  onChange={(e: any) => {
+                    let error = "";
+                    let v = parseFloat(e.target.value);
+                    if (isNaN(v)) {
+                      error = "input must be number!";
+                      v = payload.zkSendGas;
+                    }
+                    setPayload({
+                      ...payload,
+                      zkSendGasInput: e.target.value,
+                      zkSendGas: v,
+                      error,
+                    });
+                    setCreateDisable(error != "");
+                  }}
+                />
+              </div>
 
               <div>
-                Quantity (SUI):{" "}
+                Reward (SUI):{" "}
                 <input
                   type="text"
                   value={payload.quantityInput}
                   onChange={(e: any) => {
                     let error = "";
-                    const v = parseFloat(e.target.value);
+                    let v = parseFloat(e.target.value);
                     if (isNaN(v)) {
                       error = "input must be number!";
+                      v = payload.quantity;
                     }
                     setPayload({
                       ...payload,
                       quantityInput: e.target.value,
+                      quantity: v,
                       error,
                     });
                     setCreateDisable(error != "");
