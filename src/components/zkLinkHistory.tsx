@@ -17,14 +17,26 @@ export const ZkLinkHistory = () => {
   return (
     <div className="card">
       <h2>Sent History:</h2>
-      {links.map((link: any) => {
-        return (
-          <div key={link.link.address}>
-            <div className="cell line">{link.link.address}</div>
-            <div className="cell line">{JSON.stringify(link.claimed)}</div>
-          </div>
-        );
-      })}
+      <div>
+        <table className="data">
+          <thead>
+            <tr>
+              <td>Digest</td>
+              <td>Claimed</td>
+            </tr>
+          </thead>
+          <tbody>
+            {links.map((link: any) => {
+              return (
+                <tr key={link.link.address}>
+                  <td>{link.digest}</td>
+                  <td>{JSON.stringify(link.claimed)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
