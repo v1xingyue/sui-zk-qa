@@ -201,7 +201,6 @@ table.data {
   border-collapse: collapse;
   width: 100%;
   text-align: left;
-  background-color: #f8f8f8;
 }
 
 table.data th, table.data td {
@@ -215,6 +214,3 @@ table.data th {
   color: white;
 }
 
-table.data tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
